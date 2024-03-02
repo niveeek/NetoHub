@@ -1,5 +1,5 @@
 import React from "react";
-import {NavigationComponent} from "../../components/HomePageComponent/";
+import {NavigationComponent} from "../../components/HomePageComponents/";
 
 export const HomePage = () => {
     return (
