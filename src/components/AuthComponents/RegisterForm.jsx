@@ -1,12 +1,41 @@
 import React from "react";
+import {useDispatch} from "react-redux";
+import {signUpUser} from "../../redux/actionCreators/authActionCreator.js";
+import {useNavigate} from "react-router-dom";
 
 const RegisterForm = () => {
     const [name, setName] = React.useState("");
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [passwordConfirmation, setPasswordConfirmation] = React.useState("");
+    const [success, setSuccess] = React.useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!name || !email || !password || !passwordConfirmation) {
+            alert("Please fill in all fields!");
+            return;
+        }
+        if (password.length < 6) {
+            alert("Password must have at least six chracters!");
+            return;
+        }
+        if (password != passwordConfirmation) {
+            alert("Passwords do not match!");
+            return;
+        }
+        dispatch(signUpUser(name, email, password, setSuccess));
+    };
+
+    React.useEffect(() => {
+        if (success) {
+            navigate("/dashboard");
+        }
+    }, [success])
+
     return (
-        <form autoComplete={"off"}>
+        <form autoComplete={"off"} onSubmit={handleSubmit}>
             <div className="form-group my-2">
                 <input type="text" name="name" className="form-control" placeholder="Name" value={name}
                        onChange={(e) => setName(e.target.value)}/>

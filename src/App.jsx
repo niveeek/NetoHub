@@ -1,8 +1,6 @@
 import './App.css'
-import {HomePage} from "./pages/HomePage/HomePage.jsx";
 import {Route, Routes} from "react-router-dom";
-import Login from "./pages/AuthPages/Login/Login.jsx";
-import Register from "./pages/AuthPages/Register/Register.jsx";
+import {HomePage, Login, Register, DashboardPage} from "./pages/index.js";
 
 const App = () => {
   return (
@@ -11,6 +9,7 @@ const App = () => {
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
           </Routes>
       </div>
   );
