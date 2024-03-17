@@ -2,7 +2,7 @@ import "./Subbar.css"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faFileAlt, faFileUpload, faFolderPlus} from "@fortawesome/free-solid-svg-icons";
 
-const Subbar = () => {
+const Subbar = ({setIsCreateFolderModalOpen}) => {
     return (
         <nav className={"navbar navbar-expand-lg mt-2 navbar-light bg-white py-2 px-5"}>
             <p className={"ms-4"}>Root</p>
@@ -18,7 +18,7 @@ const Subbar = () => {
                     </button>
                 </li>
                 <li className={"nav-item"}>
-                    <button className={"btn btn-outline-dark mx-2"}>
+                    <button className={"btn btn-outline-dark mx-2"} onClick={() => setIsCreateFolderModalOpen(true)}>
                         <FontAwesomeIcon icon={faFolderPlus}/> &nbsp;Create Folder
                     </button>
                 </li>
