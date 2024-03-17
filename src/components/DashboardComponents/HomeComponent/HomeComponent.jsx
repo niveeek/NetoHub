@@ -1,13 +1,25 @@
 import ShowItems from "../ShowItems/ShowItems.jsx";
+import {shallowEqual, useSelector} from "react-redux";
 
 const HomeComponent = () => {
     const folders = ["New Folder", "New Folder 2"];
-    const files = ["New File", "New File 2"];
+    const files = [{name: "New File"}, {name: "New File 2"}];
+
+    const {isLoading, userFolders} = useSelector((state) => ({
+        isLoading: state.filefolders.isLoading,
+        userFolders: state.filefolders.userFolders,
+    }), shallowEqual);
 
     return (
         <div className={"col-md-12 w-100"}>
-            <ShowItems title={"Created Folders"} items={folders}/>
-            <ShowItems title={"Created Files"} items={files}/>
+            {isLoading ? (
+                <h1 className={"display-1 my-5 text-center"}>Loading...</h1>
+            ) : (
+                <>
+                    <ShowItems title={"Created Folders"} type={"folder"} items={userFolders}/>
+                    <ShowItems title={"Created Files"} type={"file"} items={files}/>
+                </>
+            )}
         </div>
     );
 };
