@@ -19,6 +19,16 @@ const setChangeFolder = (payload) => ({
     payload,
 });
 
+const addFiles = (payload) => ({
+    type: types.ADD_FILES,
+    payload,
+});
+
+const addFile = (payload) => ({
+    type: types.CREATE_FILE,
+    payload,
+});
+
 export const createFolder = (data) => (dispatch) => {
     fire
         .firestore()
@@ -51,4 +61,33 @@ export const getFolders = (userId) => (dispatch) => {
 
 export const changeFolder = (folderId) => (dispatch) => {
     dispatch(setChangeFolder(folderId));
+};
+
+export const getFiles = (userId) => (dispatch) => {
+    fire
+        .firestore()
+        .collection("files")
+        .where("userId", "==", userId)
+        .get()
+        .then(async (files) => {
+            const filesdata = await files.docs.map((file) => ({
+                data: file.data(),
+                docId: file.id,
+            }));
+            dispatch(addFiles(filesdata));
+        });
+};
+
+export const createFile = (data, setSuccess) => (dispatch) => {
+    fire
+        .firestore()
+        .collection("files")
+        .add(data)
+        .then(async (file) => {
+            const fileData = await (await file.get()).data();
+            const fileId = file.id;
+            dispatch(addFile({data: fileData, docId: fileId}));
+            alert("File Created Successfully");
+            setSuccess(true);
+        });
 };

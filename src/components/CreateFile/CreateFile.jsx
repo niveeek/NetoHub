@@ -1,13 +1,14 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTimes} from "@fortawesome/free-solid-svg-icons/faTimes";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import {createFolder} from "../../redux/actionCreators/fileFoldersActionCreator.js";
+import {createFile} from "../../redux/actionCreators/fileFoldersActionCreator.js";
 
-const CreateFolder = ({setIsCreateFolderModalOpen}) => {
-    const [folderName, selfFolderName] = React.useState("");
-    const {userFolders, user, currentFolder, currentFolderData} = useSelector((state) => ({
-        userFolders: state.filefolders.userFolders,
+const CreateFile = ({setIsCreateFileModalOpen}) => {
+    const [fileName, setFileName] = React.useState("");
+    const [success, setSuccess] = React.useState(false);
+    const {userFiles, user, currentFolder, currentFolderData} = useSelector((state) => ({
+        userFiles: state.filefolders.userFiles,
         user: state.auth.user,
         currentFolder: state.filefolders.currentFolder,
         currentFolderData: state.filefolders.userFolders.find(
@@ -16,11 +17,22 @@ const CreateFolder = ({setIsCreateFolderModalOpen}) => {
     }), shallowEqual);
 
     const dispatch = useDispatch();
-    const checkFolderAlreadyPresent = (name) => {
-        const folderPresent = userFolders
-            .filter((folder) => folder.data.parent === currentFolder)
+
+    useEffect(() => {
+        if (success) {
+            setFileName("");
+            setSuccess(false);
+            setIsCreateFileModalOpen(false);
+        }
+    }, [success]);
+    const checkFileAlreadyPresent = (name, extension) => {
+        if (!extension) {
+            name = name + ".txt";
+        }
+        const filePresent = userFiles
+            .filter((file) => file.data.parent === currentFolder)
             .find((fldr) => fldr.data.name === name);
-        if (folderPresent) {
+        if (filePresent) {
             return true;
         } else {
             return false;
@@ -28,28 +40,38 @@ const CreateFolder = ({setIsCreateFolderModalOpen}) => {
     };
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (folderName) {
-            if (folderName.length > 3) {
-                if (!checkFolderAlreadyPresent(folderName)) {
+        if (fileName) {
+            if (fileName.length > 3) {
+                let extension = false;
+                if (fileName.split(".").length > 1) {
+                    extension = true;
+                }
+                if (!checkFileAlreadyPresent(fileName, extension)) {
                     const data = {
                         createdAt: new Date(),
-                        name: folderName,
+                        name: extension ? fileName : `${fileName}.txt`,
                         userId: user.uid,
                         createdBy: user.displayName,
-                        path: currentFolder === "root" ? [] : [...currentFolderData?.data.path, currentFolder],
+                        path:
+                            currentFolder === "root"
+                                ? []
+                                : [...currentFolderData?.data.path, currentFolder],
                         parent: currentFolder,
                         lastAccessed: null,
                         updatedAt: new Date(),
+                        extension: extension ? fileName.split(".")[1] : "txt",
+                        data: "",
+                        url: null,
                     };
-                    dispatch(createFolder(data));
+                    dispatch(createFile(data, setSuccess));
                 } else {
-                    alert('Folder Already Present');
+                    alert('File Already Present');
                 }
             } else {
-                alert('Folder Name must be at least 4 characters');
+                alert('File Name must be at least 4 characters');
             }
         } else {
-            alert('Folder Name is required');
+            alert('File Name is required');
         }
     };
 
@@ -61,8 +83,8 @@ const CreateFolder = ({setIsCreateFolderModalOpen}) => {
             <div className={"row align-items-center justify-content-center"}>
                 <div className={"col-md-4 mt-5 bg-white rounded p-4"}>
                     <div className={"d-flex justify-content-between"}>
-                        <h4>Create Folder</h4>
-                        <button className={"btn"} onClick={() => setIsCreateFolderModalOpen(false)}>
+                        <h4>Create File</h4>
+                        <button className={"btn"} onClick={() => setIsCreateFileModalOpen(false)}>
                             <FontAwesomeIcon
                                 icon={faTimes}
                                 className={"text-black"}
@@ -78,13 +100,13 @@ const CreateFolder = ({setIsCreateFolderModalOpen}) => {
                                     type={"text"}
                                     className={"form-control"}
                                     id={"folderName"}
-                                    placeholder={"Folder Name"}
-                                    value={folderName}
-                                    onChange={e => selfFolderName(e.target.value)}
+                                    placeholder={"File Name eg. file.txt, index.html, index.php, index.ts, index.js"}
+                                    value={fileName}
+                                    onChange={e => setFileName(e.target.value)}
                                 />
                             </div>
                             <button type={"submit"} className={"btn btn-primary mt-5 form-control"}>
-                                Create Folder
+                                Create File
                             </button>
                         </form>
                     </div>
@@ -94,4 +116,4 @@ const CreateFolder = ({setIsCreateFolderModalOpen}) => {
     );
 }
 
-export default CreateFolder;
+export default CreateFile;

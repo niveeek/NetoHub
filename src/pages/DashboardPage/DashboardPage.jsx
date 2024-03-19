@@ -5,11 +5,13 @@ import Navbar from "../../components/DashboardComponents/Navbar/Navbar.jsx";
 import Subbar from "../../components/DashboardComponents/Subbar/Subbar.jsx";
 import HomeComponent from "../../components/DashboardComponents/HomeComponent/HomeComponent.jsx";
 import CreateFolder from "../../components/CreateFolder/CreateFolder.jsx";
-import {getFolders} from "../../redux/actionCreators/fileFoldersActionCreator.js";
+import {getFiles, getFolders} from "../../redux/actionCreators/fileFoldersActionCreator.js";
 import FolderComponent from "../../components/DashboardComponents/FolderComponent/FolderComponent.jsx";
+import CreateFile from "../../components/CreateFile/CreateFile.jsx";
 
 const DashboardPage = () => {
     const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = React.useState(false);
+    const [isCreateFileModalOpen, setIsCreateFileModalOpen] = React.useState(false);
     const {isLoggedIn, isLoading, userId} = useSelector((state) => ({
         isLoggedIn: state.auth.isAuthenticated,
         isLoading: state.filefolders.isLoading,
@@ -27,16 +29,22 @@ const DashboardPage = () => {
     React.useEffect(() => {
         if (isLoading && userId) {
             dispatch(getFolders(userId));
+            dispatch(getFiles(userId));
         }
     }, [isLoading, userId, dispatch]);
     return (
         <>
             {isCreateFolderModalOpen && (
                 <CreateFolder setIsCreateFolderModalOpen={setIsCreateFolderModalOpen}/>
-            )
-            }
+            )}
+            {isCreateFileModalOpen && (
+                <CreateFile setIsCreateFileModalOpen={setIsCreateFileModalOpen}/>
+            )}
             <Navbar/>
-            <Subbar setIsCreateFolderModalOpen={setIsCreateFolderModalOpen}/>
+            <Subbar
+                setIsCreateFolderModalOpen={setIsCreateFolderModalOpen}
+                setIsCreateFileModalOpen={setIsCreateFileModalOpen}
+            />
             <Routes>
                 <Route path={""} element={<HomeComponent/>}/>
                 <Route path={"folder/:folderId"} element={<FolderComponent/>}/>
